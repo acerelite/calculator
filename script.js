@@ -8,7 +8,7 @@ function multiply(a, b) {
   return a * b;
 }
 function divide(a, b) {
-  return Math.round((a / b + Number.EPSILON) * 1000) / 1000;
+  return Math.round((a / b + Number.EPSILON) * 10000000) / 10000000;
 }
 
 function operate(a, b, operator) {
@@ -23,86 +23,119 @@ function operate(a, b, operator) {
       return multiply(a, b);
       break;
     case "/":
-      return divide(a, b);
+      return b === 0 ? "What ya doin": divide(a, b);
     default:
       "ERROR";
   }
 }
 
 function displayNumber() {
+
+  if (displayOut.textContent === "0" && operatorSelected === true) {
+    displayOut.textContent = this.textContent;
+    return;
+  }
   if (operatorSelected === true) {
+    if(storedNumber === 0) {
+      displayOut.textContent += this.textContent;
+      return;
+    }
     operatorSelected = false;
     storedNumber = Number(displayOut.textContent);
     displayOut.textContent = "";
+    displayOut.textContent += this.textContent;
+    return;
   }
   if (displayOut.textContent === "0") {
     displayOut.textContent = this.textContent;
     return;
   }
+  if(operatorSelected === false) {
+    if(operatorSelected === false && equalAccessed == true) {
+      equalAccessed = false;
+      displayOut.textContent = "";
+    }
+    displayOut.textContent += this.textContent;
+    return;
+  }
+
   displayOut.textContent += this.textContent;
 }
 
 function operatorSelect() {
   if (operatorSelected) {
-    result = operate(
-      Number(displayOut.textContent),
+    displayOut.textContent = operate(
+      storedNumber === 0 ? 0 : Number(displayOut.textContent),
       Number(displayOut.textContent),
       storedOperator === "" ? this.textContent : storedOperator
     );
-    displayOut.textContent = result;
-    operatorSelected = true;
-    storedOperator = this.textContent;
-    return;
-  }
-  if (storedNumber === 0) {
+    storedNumber = Number(displayOut.textContent);
     storedOperator = this.textContent;
     operatorSelected = true;
     return;
+  } else if (storedNumber === 0) {
+    storedNumber = Number(displayOut.textContent);
+    storedOperator = this.textContent;
+    operatorSelected = true;
+    return;
   }
-  result = operate(
+
+  displayOut.textContent = operate(
     Number(storedNumber),
     Number(displayOut.textContent),
     storedOperator === "" ? this.textContent : storedOperator
   );
-  displayOut.textContent = result;
   storedOperator = this.textContent;
   operatorSelected = true;
 }
 
 function evaluate() {
   if (operatorSelected) {
-    result = operate(
-      Number(displayOut.textContent),
+    displayOut.textContent = operate(
+      storedNumber === 0 ? 0 : Number(displayOut.textContent),
       Number(displayOut.textContent),
       storedOperator
     );
-    displayOut.textContent = result;
-    operatorSelected = false;
-    storedOperator = "";
     storedNumber = 0;
+    storedOperator = "";
+    operatorSelected = false;
+    equalAccessed = true;
     return;
-  }
-  if (storedOperator === "") return;
-  result = operate(
+  }else if (storedOperator === "") return;
+
+  displayOut.textContent = operate(
     Number(storedNumber),
     Number(displayOut.textContent),
     storedOperator
   );
-  displayOut.textContent = result;
-  operatorSelected = false;
-  storedOperator = "";
+
+  
   storedNumber = 0;
+  storedOperator = "";
+  operatorSelected = false;
+  equalAccessed = true;
 }
 
 function clearCalc() {
-  let result = 0;
   let storedNumber = 0;
-  let operatorSelected = false;
-  let storedOperator = "";
   displayOut.textContent = "0";
+  let storedOperator = "";
+  let operatorSelected = false;
 }
 
-let result = 0;
+function addDecPoint() {
+  if(displayOut.textContent.includes(".")) return;
+  if(operatorSelected) {
+    operatorSelected = false;
+    displayOut.textContent = "0"
+    displayOut.textContent += ".";
+    return
+  }
+
+  displayOut.textContent += ".";
+}
+
+let equalAccessed = false;
 let storedNumber = 0;
 let operatorSelected = false;
 let storedOperator = "";
@@ -112,6 +145,7 @@ const numberBtns = document.querySelectorAll(".numbers > button");
 const operators = document.querySelectorAll(".operators > button");
 const equal = document.querySelector(".equal");
 const clear = document.querySelector(".clear");
+const dot = document.querySelector(".dot");
 
 numberBtns.forEach((numberBtn) =>
   numberBtn.addEventListener("click", displayNumber)
@@ -122,3 +156,4 @@ operators.forEach((operator) =>
 
 clear.addEventListener("click", clearCalc);
 equal.addEventListener("click", evaluate);
+dot.addEventListener("click", addDecPoint);
