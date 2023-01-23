@@ -1,17 +1,72 @@
-button {
-  font-size: 32px;
-  height: 100px;
-  width: 100px;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: bisque;
 }
 
-body {
-  padding-top: 10px;
+.calcBody {
+  width: 320px;
+  display: flex;
 }
-* {
-  text-align: center;
+
+
+button {
+  width: 80px;
+  height: 80px;
+  font-size: 24px;
+  border-radius: 30px;
+  border-color: white;
+  background-color: burlywood;
+  color: whitesmoke;
+}
+.clearDel {
+  width: 320px;
+  display: flex;
+  flex-direction: row;
+}
+.clearDel > button {
+  flex: 1 1 auto;
+  height: 35px;
+}
+
+.numbers {
+  width: 240px;
+  display: flex;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.numbers div {
+  width: 160px;
+  display: flex;
+}
+
+.operators {
+  width: 80px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.etc {
+  display: flex;
+  flex-wrap: wrap;
+  width: 400px;
+}
+
+.etc button {
+  flex: 0 0 none;
 }
 
 .displayOut {
   margin-top: 50px;
-  font-size: 128px;
+  font-size: 84px;
 }
