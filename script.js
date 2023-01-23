@@ -1,11 +1,11 @@
 function add(a, b) {
-  return a + b;
+  return Math.round((a + b + Number.EPSILON) * 10000000) / 10000000;
 }
 function subtract(a, b) {
-  return a - b;
+  return Math.round((a - b + Number.EPSILON) * 10000000) / 10000000;
 }
 function multiply(a, b) {
-  return a * b;
+  return Math.round((a * b + Number.EPSILON) * 10000000) / 10000000;
 }
 function divide(a, b) {
   return Math.round((a / b + Number.EPSILON) * 10000000) / 10000000;
@@ -23,129 +23,147 @@ function operate(a, b, operator) {
       return multiply(a, b);
       break;
     case "/":
-      return b === 0 ? "What ya doin": divide(a, b);
+      return b === 0 ? "What ya doin" : divide(a, b);
     default:
       "ERROR";
   }
 }
 
 function displayNumber() {
-
-  if (displayOut.textContent === "0" && operatorSelected === true) {
+  if(equation.at(-1) === "=") {
+    equation = [];
+    displayOut.textContent = "0"
+  }
+  if (displayOut.textContent === "0" || regex.test(equation.at(-1))) {
+    equation.push(Number(this.textContent));
     displayOut.textContent = this.textContent;
     return;
   }
-  if (operatorSelected === true) {
-    if(storedNumber === 0) {
-      displayOut.textContent += this.textContent;
-      return;
-    }
-    operatorSelected = false;
-    storedNumber = Number(displayOut.textContent);
-    displayOut.textContent = "";
-    displayOut.textContent += this.textContent;
-    return;
-  }
-  if (displayOut.textContent === "0") {
-    displayOut.textContent = this.textContent;
-    return;
-  }
-  if(operatorSelected === false) {
-    if(operatorSelected === false && equalAccessed == true) {
-      equalAccessed = false;
-      displayOut.textContent = "";
-    }
-    displayOut.textContent += this.textContent;
-    return;
-  }
-
+  equation.push(Number(this.textContent));
   displayOut.textContent += this.textContent;
 }
 
-function operatorSelect() {
-  if (operatorSelected) {
-    displayOut.textContent = operate(
-      storedNumber === 0 ? 0 : Number(displayOut.textContent),
-      Number(displayOut.textContent),
-      storedOperator === "" ? this.textContent : storedOperator
-    );
-    storedNumber = Number(displayOut.textContent);
-    storedOperator = this.textContent;
-    operatorSelected = true;
-    return;
-  } else if (storedNumber === 0) {
-    storedNumber = Number(displayOut.textContent);
-    storedOperator = this.textContent;
-    operatorSelected = true;
-    return;
+function completeNumber(equation) {
+  let tempArr = equation.join("").split(regex);
+  if (tempArr.at(-1) === "") {
+    tempArr.pop();
+    tempArr.push("0");
   }
-
-  displayOut.textContent = operate(
-    Number(storedNumber),
-    Number(displayOut.textContent),
-    storedOperator === "" ? this.textContent : storedOperator
-  );
-  storedOperator = this.textContent;
-  operatorSelected = true;
+  for (let unit of equation) {
+    if (unit.toString().match(regex)) {
+      tempArr.push(unit.toString());
+      break;
+    }
+  }
+  return tempArr;
 }
 
-function evaluate() {
-  if (operatorSelected) {
-    displayOut.textContent = operate(
-      storedNumber === 0 ? 0 : Number(displayOut.textContent),
-      Number(displayOut.textContent),
-      storedOperator
+function operatorSelect() {
+  equation.at(-1) === "=" ? equation.pop(): "";
+  let result = 0;
+  if (equation.at(-1).toString().match(regex)) {
+    let numFromEquation = Number(
+      equation.slice(0, equation.length - 1).join("")
     );
-    storedNumber = 0;
-    storedOperator = "";
-    operatorSelected = false;
-    equalAccessed = true;
+    result = operate(numFromEquation, numFromEquation, equation.at(-1));
+    equation = [];
+    equation.push(result);
+    equation.push(this.textContent);
+    displayOut.textContent = result;
     return;
-  }else if (storedOperator === "") return;
-
-  displayOut.textContent = operate(
-    Number(storedNumber),
-    Number(displayOut.textContent),
-    storedOperator
-  );
-
-  
-  storedNumber = 0;
-  storedOperator = "";
-  operatorSelected = false;
-  equalAccessed = true;
+  }
+  if (equation.join("").split(regex).length === 2) {
+    let seperate = completeNumber(equation);
+    result = operate(Number(seperate[0]), Number(seperate[1]), seperate[2]);
+    equation = [];
+    equation.push(result);
+    displayOut.textContent = result;
+  }
+  equation.push(this.textContent);
 }
 
 function clearCalc() {
-  let storedNumber = 0;
+  equation = [];
+  equation[0] = 0;
   displayOut.textContent = "0";
-  let storedOperator = "";
-  let operatorSelected = false;
 }
 
 function addDecPoint() {
-  if(displayOut.textContent.includes(".")) return;
-  if(operatorSelected) {
-    operatorSelected = false;
-    displayOut.textContent = "0"
-    displayOut.textContent += ".";
-    return
+  if(equation.at(-1) === "=") {
+    equation = [];
+    displayOut.textContent = "0.";
+    equation.push("0.");
+    return;
   }
-
+  if (regex.test(equation.at(-1))) {
+    displayOut.textContent = "0.";
+    equation.push(".");
+    return;
+  }
+  if (displayOut.textContent.includes(".")) {
+    return;
+  }
   displayOut.textContent += ".";
+  equation.push(".");
 }
 
-let equalAccessed = false;
-let storedNumber = 0;
-let operatorSelected = false;
-let storedOperator = "";
+function backspace() {
+  if(equation.at(-1) === "=") {
+    equation = [];
+    equation.push[0];
+    displayOut.textContent = "0";
+    equation.push("0");
+    return;
+  }
+  if (displayOut.textContent === "0" || displayOut.textContent.length == 1) {
+    displayOut.textContent = "0";
+    equation.pop();
+    return;
+  }
+  if (regex.test(equation.at(-1))) {
+    equation.pop();
+  }
+  displayOut.textContent = displayOut.textContent.substring(
+    0,
+    displayOut.textContent.length - 1
+  );
+  equation.pop();
+}
 
+function calculate() {
+  let result = 0;
+  if(equation.at(-1).toString().match(regex)){
+    let numFromEquation = Number(
+      equation.slice(0, equation.length - 1).join("")
+    );
+    console.log(numFromEquation);
+    result = operate(numFromEquation, numFromEquation, equation.at(-1));
+    equation = [];
+    equation.push(result);
+    equation.push("=");
+    displayOut.textContent = result;
+    return;
+  }
+  if (equation.join("").split(regex).length === 2) {
+    let seperate = completeNumber(equation);
+    result = operate(Number(seperate[0]), Number(seperate[1]), seperate[2]);
+    displayOut.textContent = result;
+    equation = [];
+    equation.push(result);
+    equation.push("=");
+  }
+}
+
+const regex = /[\-\/\+\*]/;
+let equation = [];
+equation.push(0);
 let displayOut = document.querySelector(".displayOut");
 const numberBtns = document.querySelectorAll(".numbers > button");
 const operators = document.querySelectorAll(".operators > button");
 const equal = document.querySelector(".equal");
 const clear = document.querySelector(".clear");
 const dot = document.querySelector(".dot");
+const del = document.querySelector(".del");
 
 numberBtns.forEach((numberBtn) =>
   numberBtn.addEventListener("click", displayNumber)
@@ -153,7 +171,6 @@ numberBtns.forEach((numberBtn) =>
 operators.forEach((operator) =>
   operator.addEventListener("click", operatorSelect)
 );
-
 clear.addEventListener("click", clearCalc);
-equal.addEventListener("click", evaluate);
 dot.addEventListener("click", addDecPoint);
+equal.addEventListener("click", calculate);
