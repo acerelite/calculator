@@ -25,19 +25,22 @@ function initCalc() {
 }
 
 function add(firstNum, secondNum) {
-  return firstNum + secondNum;
+  return Math.round((firstNum + secondNum + Number.EPSILON) * 100000) / 100000;
 }
 
 function subtract(firstNum, secondNum) {
-  return firstNum - secondNum;
+  return Math.round((firstNum - secondNum + Number.EPSILON) * 100000) / 100000;
 }
 
 function multiply(firstNum, secondNum) {
-  return firstNum * secondNum;
+  return Math.round((firstNum * secondNum + Number.EPSILON) * 100000) / 100000;
 }
 
 function divide(firstNum, secondNum) {
-  return secondNum == 0 ? 'bruh' : firstNum / secondNum;
+  if (secondNum == 0) {
+    return 'bro';
+  }
+  return Math.round((firstNum / secondNum + Number.EPSILON) * 100000) / 100000;
 }
 
 function operate(firstNum, secondNum, operator) {
@@ -58,16 +61,17 @@ function operate(firstNum, secondNum, operator) {
 function numPress() {
   let numPressed = Number(this.textContent);
 
-  if(operator == null) {
-    operator = '';
-    display.textContent = 0;
-  }
-  
-  if (operator && firstNum && secondNum == null) {
+  // // 
+  // if (operator == null) {
+  //   operator = '';
+  //   display.textContent = 0;
+  // }
+
+  // Start with second operand if operator and first number has bin selected
+  if (operator && firstNum != null && secondNum == null) {
     display.textContent = '0';
     secondNum = 0;
   }
-
 
   if (display.textContent == '0') {
     display.textContent = numPressed;
@@ -77,21 +81,18 @@ function numPress() {
 }
 
 function opPress() {
+
+  // To store the displayed number after pressing an operation
   if (firstNum != null) {
     secondNum = Number(display.textContent);
   } else {
     firstNum = Number(display.textContent);
   }
 
+  // To check whether an operator is present to start computing
   if (operator) {
     let result = 0;
-
-    if (firstNum != null && secondNum != null) {
-      result = operate(firstNum, secondNum, operator);
-    } else {
-      result = operate(firstNum, firstNum, operator);
-    }
-
+    result = operate(firstNum, secondNum, operator);
     firstNum = result;
     secondNum = null;
     display.textContent = result;
@@ -101,6 +102,20 @@ function opPress() {
 }
 
 function setDot() {
+  // if (firstNum == null && operator == null) {
+  // if (!operator) {
+  //   operator = '';
+  //   display.textContent = 0;
+  // }
+  // if (operand && firstNum != null && secondNum == null) {
+    
+  // Reset display when starting on second operand
+  if (firstNum != null && secondNum == null) {
+    display.textContent = '0'
+    secondNum = 0;
+  }
+
+  // if(firstNum != null && operator) display.textContent = '0';
   if (!display.textContent.includes('.')) display.textContent += '.';
 }
 
@@ -112,10 +127,10 @@ function clear() {
 }
 
 function evaluate() {
-  if(firstNum == null && secondNum == null) return;
+  if (firstNum == null && secondNum == null) return;
   let result = 0;
 
-  if(operator && firstNum != null && secondNum == null) {
+  if (operator && firstNum != null && secondNum == null) {
     result = operate(firstNum, firstNum, operator);
   } else {
     secondNum = Number(display.textContent);
