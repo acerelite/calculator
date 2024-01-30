@@ -1,59 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Encode+Sans&family=Roboto+Condensed&display=swap");
+
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  border: 1px solid black;
-  border-radius: 5px;
+  font-family: "Encode Sans", sans-serif;
+  font-family: "Roboto Condensed", sans-serif;
   font-size: 24px;
-  font-family: 'Courier New', Courier, monospace;
 }
 
 body {
+  height: 90vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  font-weight: bold;
 }
 
 .calculator {
-  max-width: 315px;
-  padding: 5px;
-}
-
-.display {
-  margin-bottom: 5px;
-  padding: 10px;
-  height: 45px;
-  text-align: end;
-  font-size: 20px;
-}
-
-.btns {
+  border: 1px solid black;
   display: flex;
+  flex-direction: column;
 }
 
-.main,
-.operations {
+#display {
+  font-size: 32px;
+  border: 1px solid black;
+  margin: 10px;
+  height: 75px;
+  padding-right: 10px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.buttons {
+  border: 1px solid black;
+  display: flex;
+  padding: 10px;
+}
+
+#operators,
+.etc,
+#digits {
+  margin: 5px;
+  gap: 10px;
+}
+
+#operators,
+.etc {
+  display: flex;
+  flex-direction: column;
+}
+
+#digits {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  padding: 5px;
+  width: 260px;
 }
 
-.main{
-  flex: 1;
+button {
+  margin: 0;
+  width: 0;
+  height: 80px;
+  width: 80px;
 }
 
-.main button {
-  width: 70px;
-  height: 70px;
-}
-
-.operations {
-  flex-direction: column;
-  width: 70px;
-}
-
-.operations button {
+button[number="0"],
+#calculate {
   flex: 1;
 }
