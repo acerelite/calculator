@@ -78,6 +78,10 @@ function operate(firstNum, secondNum, operator) {
 }
 
 function numPress(key) {
+  if (equalFlag) {
+    equalFlag = false;
+    display.textContent = '0';
+  }
   // Assign if keyboard is pressed or button is pressed
   let numPressed = Number(key.target == undefined ? key : key.target.textContent);
 
@@ -117,6 +121,11 @@ function opPress(key) {
 }
 
 function setDot() {
+  if (equalFlag) {
+    equalFlag = false;
+    display.textContent = '0';
+  }
+
   // Reset display when starting on second operand
   if (firstNum != null && secondNum == null) {
     display.textContent = '0'
