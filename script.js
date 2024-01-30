@@ -2,6 +2,7 @@
 let firstNum;
 let secondNum;
 let operator;
+let equalFlag;
 let display;
 
 initCalc();
@@ -10,18 +11,36 @@ function initCalc() {
   firstNum = null;
   secondNum = null;
   operator = null;
+  equalFlag = false
   display = document.querySelector('.display');
   let numBtns = document.querySelectorAll('.number');
+  let opsBtn = document.querySelectorAll('.operator');
   let dotBtn = document.querySelector('.dot');
   let equalBtn = document.querySelector('.equal');
   let clearBtn = document.querySelector('.clear');
-  let opsBtn = document.querySelectorAll('.operator');
+  let delBtn = document.querySelector('.del');
 
+  document.addEventListener('keydown', keyboardPress);
   numBtns.forEach(numBtn => { numBtn.addEventListener('click', numPress) });
   opsBtn.forEach(opBtn => { opBtn.addEventListener('click', opPress) });
   dotBtn.addEventListener('click', setDot);
-  clearBtn.addEventListener('click', clear);
   equalBtn.addEventListener('click', evaluate);
+  clearBtn.addEventListener('click', clear);
+  delBtn.addEventListener('click', deleteDisplay);
+}
+
+function keyboardPress(event) {
+  if (event.key == 'Backspace') {
+    deleteDisplay();
+  } else if (event.key == '.') {
+    setDot();
+  } else if (event.key.match(/[0-9]/)) {
+    numPress(event.key);
+  } else if (event.key.match(/([\/\*\-\+])/)) {
+    opPress(event.key);
+  } else if (event.key == 'Enter') {
+    evaluate();
+  }
 }
 
 function add(firstNum, secondNum) {
@@ -58,14 +77,9 @@ function operate(firstNum, secondNum, operator) {
   }
 }
 
-function numPress() {
-  let numPressed = Number(this.textContent);
-
-  // // 
-  // if (operator == null) {
-  //   operator = '';
-  //   display.textContent = 0;
-  // }
+function numPress(key) {
+  // Assign if keyboard is pressed or button is pressed
+  let numPressed = Number(key.target == undefined ? key : key.target.textContent);
 
   // Start with second operand if operator and first number has bin selected
   if (operator && firstNum != null && secondNum == null) {
@@ -80,8 +94,7 @@ function numPress() {
   }
 }
 
-function opPress() {
-
+function opPress(key) {
   // To store the displayed number after pressing an operation
   if (firstNum != null) {
     secondNum = Number(display.textContent);
@@ -98,17 +111,12 @@ function opPress() {
     display.textContent = result;
   }
 
-  operator = this.textContent;
+  // Assign if keyboard is pressed or button is pressed
+  operator = key.target == undefined ? key : key.target.textContent;
+
 }
 
 function setDot() {
-  // if (firstNum == null && operator == null) {
-  // if (!operator) {
-  //   operator = '';
-  //   display.textContent = 0;
-  // }
-  // if (operand && firstNum != null && secondNum == null) {
-    
   // Reset display when starting on second operand
   if (firstNum != null && secondNum == null) {
     display.textContent = '0'
@@ -141,4 +149,14 @@ function evaluate() {
   firstNum = null;
   operator = null;
   display.textContent = result;
+  equalFlag = true;
+}
+function deleteDisplay() {
+  // To refresh the display instead of popping the result
+  if (equalFlag) {
+    equalFlag = false;
+    display.textContent = '0';
+  }
+  display.textContent = display.textContent.slice(0, display.textContent.length - 1);
+  if (display.textContent == '') display.textContent = '0';
 }
